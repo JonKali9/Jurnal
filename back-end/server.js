@@ -5,8 +5,7 @@ console.clear();
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const passport = require('passport');
-const bcrypt = require('bcrypt');
+const auth = require('./auth');
 
 /*Import Routes*/
 const login = require('./routers/login');
@@ -19,10 +18,14 @@ const PORT = 3001;
 /*Middle Ware*/
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+//Authorization
+app.use(auth);
 
 /*Routing*/
-app.use('/login', login);
-app.use('/register', register);
+app.use('/api/register', register);
+app.use('/api/login', login);
 
 /*Setup Server*/
 app.listen(PORT, () => {
