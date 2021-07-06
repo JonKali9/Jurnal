@@ -8,6 +8,7 @@
     "express-session": "^1.17.2",
     "i": "^0.3.6",
     "morgan": "^1.10.0",
+    "mysql2": "^2.2.5",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0"
   },

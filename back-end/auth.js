@@ -1,3 +1,5 @@
+const getSession = require('./database/users').getSession;
+
 const generateSecret = length => {
     const values = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
     let secret = '$';
@@ -8,21 +10,21 @@ const generateSecret = length => {
 }
 
 const authenticate = (req, res, next) => {
-    const publicUrls = ['/api/register'];
+    const publicUrls = ['/api/register', '/api/login'];
     if (!publicUrls.includes(req.url)) {
         const authHeader = req.headers.authorization;
         if (authHeader) {
             //Get authorization info
-            const auth = new Buffer.from(authHeader.split(' ')[1],
-            'base64').toString().split(':');
-            const user = auth[0];
-            const pass = auth[1];
-
-            //Check if User is already registered
-        
-            //Authorize User
-            const secret = generateSecret(26);
-            next();
+            const authToken = authHeader.split(' ')[1];
+            //Check if secret is valid and update
+            const newSecret = generateSecret(26);
+            getSession(authToken, newSecret)
+            .then(resp => {
+                if (resp === 'invalid') res.status(401).send('Invalid token');
+                else {
+                    next()
+                };
+            })
         } else {
             res.status(401).send('No request Headers');
         }
@@ -31,5 +33,5 @@ const authenticate = (req, res, next) => {
     }
 }
 
-module.exports = authenticate;
+module.exports.authenticate = authenticate;
 module.exports.generateSecret = generateSecret;
